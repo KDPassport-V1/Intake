@@ -118,8 +118,8 @@ export class AppComponent implements OnInit {
     }
   }
   successCallBack(data:any) {
-    if(data.statusMessage == 'Success'){
-    this.toast.success(data.statusValue, 'Success')
+    if(data.status == 'SUCCESS'){
+    this.toast.success(data.message, 'Success')
     this.employeeVal = false
     this.model = {}
     this.locationList = []
