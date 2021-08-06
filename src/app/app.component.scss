@@ -1,0 +1,15 @@
+.terms-css{
+  overflow: auto;
+  height: auto;
+  max-height: 400px;
+  color: #000;
+  font-family: sans-serif;
+  font-size: 13px;
+}
+.invalid {
+  display: block;
+  width: 100%;
+  margin-top: .25rem;
+  font-size: 80%;
+  color: #dc3545;
+}

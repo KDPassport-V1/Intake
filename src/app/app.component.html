@@ -1,0 +1,272 @@
+<div class="toolbar" role="banner">
+  <img src="assets/images/new-kd-logo.png" width="100px" class="user-avatar" />
+  <h5 style="margin: 0px;">KD PASSPORT</h5>
+    <div class="spacer"></div>
+</div>
+
+<div *ngIf="!employeeVal" class="content1" role="main">
+  <div class="load-page card highlight-card card-small">
+    <img src="assets/images/new-kd-emp-logo.png" width="120px" class="user-avatar" />
+    <span style="padding-bottom: 10px;">Testing Intake and Consent Form</span>
+    <button style="color: #003059;" type="submit" class="btn btn-primary custom-btn custom-cancel" (click)="onFormPage()">Click Here
+      <i class="fa fa-arrow-right" aria-hidden="true"></i>
+    </button>
+  </div>
+</div>
+
+<div *ngIf="employeeVal" class="content" role="main">
+  <!-- <div class="card highlight-card card-small">
+    <span>{{ title }} app is running!</span>
+  </div> -->
+  <form name="form" (ngSubmit)="f.form.valid && onFinalSubmit()" #f="ngForm" novalidate>
+  <div class="col-md-12 row">
+    <div class="col-md-6">
+      <div class="form-group">
+        <label for="firstName">First Name</label>
+        <input  type="text" [autocomplete]="true" class="form-control" name="firstName" placeholder="First Name" [(ngModel)]="model.firstName" #firstName="ngModel" [ngClass]="{ 'is-invalid': f.submitted && firstName.invalid }" required />
+        <div *ngIf="f.submitted && firstName.invalid" class="invalid-feedback">
+            <div *ngIf="firstName?.errors?.required">First Name is required</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="form-group">
+        <label for="lastName">Last Name</label>
+        <input  type="text" [autocomplete]="true" class="form-control" name="lastName" placeholder="Last Name" [(ngModel)]="model.lastName" #lastName="ngModel" [ngClass]="{ 'is-invalid': f.submitted && lastName.invalid }" required />
+        <div *ngIf="f.submitted && lastName.invalid" class="invalid-feedback">
+            <div *ngIf="lastName?.errors?.required">Last Name is required</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="form-group">
+        <label for="dob">Date Of Birth</label>
+        <div class="input-group">
+          <input class="form-control"  placeholder="Date Of Birth" name="dob" [maxDate]="maxDate"
+           #c3="ngModel" [(ngModel)]="model.dob" (click)="dob.toggle();"
+           ngbDatepicker #dob="ngbDatepicker" [readonly]="true"
+           [minDate]="{year: 1900, month:1, day: 1}"
+           [ngClass]="{ 'is-invalid': f.submitted && c3.invalid }" required/>
+          <div class="input-group-append" style="z-index: 0;">
+            <button style="padding: 3px 10px;" class="btn btn-outline-secondary" (click)="dob.toggle()" type="button" >
+              <i class="fa fa-calendar" aria-hidden="true"></i>
+            </button>
+          </div>
+          <div *ngIf="f.submitted && c3.invalid" class="invalid-feedback" style="display: block;">
+              <div *ngIf="c3?.errors?.required">Date Of Birth is required</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="form-group">
+          <label for="company">Company</label>
+          <select  class="form-control" name="company" [(ngModel)]="model.company" (change)="onCompanyChange($event)"
+          [ngClass]="{'is-invalid':f.submitted && company.invalid}" #company="ngModel" required>
+              <option [ngValue]="undefined" selected>Select</option>
+              <option *ngFor="let companyVal of companyList; let j = index" [ngValue]="companyVal">{{companyVal.name}}</option>
+            </select>
+            <div class="invalid-feedback">
+              <div>Company is required</div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="form-group">
+            <label for="loc">Location</label>
+            <select  class="form-control" name="loc" [(ngModel)]="model.loc"
+            [ngClass]="{'is-invalid':f.submitted && loc.invalid}" #loc="ngModel" required>
+                <option [ngValue]="undefined" selected>Select</option>
+                <option *ngFor="let locValue of locationList; let j = index" [value]="locValue.id">{{locValue.name}}</option>
+              </select>
+              <div class="invalid-feedback">
+                <div>Location is required</div>
+            </div>
+          </div>
+        </div>
+    <div class="col-md-6">
+      <div class="form-group">
+          <label for="race">Race <span style="font-size: 12px;font-weight: 500;">( Required By Department of Health and Human Services )</span></label>
+          <select  class="form-control" name="race" [(ngModel)]="model.race"
+          [ngClass]="{'is-invalid':f.submitted && race.invalid}" #race="ngModel" required>
+              <option [ngValue]="undefined" selected>Select</option>
+              <option *ngFor="let raceValue of raceList; let j = index" [value]="raceValue">{{raceValue}}</option>
+            </select>
+            <div class="invalid-feedback">
+              <div>Race is required</div>
+          </div>
+        </div>
+      </div>
+    <div class="col-md-6">
+      <div class="form-group">
+          <label for="sex">Sex</label>
+          <select  class="form-control" name="sex" [(ngModel)]="model.sex"
+          [ngClass]="{'is-invalid':f.submitted && sex.invalid}" #sex="ngModel" required>
+              <option [ngValue]="undefined" selected>Select</option>
+              <option *ngFor="let sexValue of sexList; let j = index" [value]="sexValue">{{sexValue}}</option>
+            </select>
+            <div class="invalid-feedback">
+              <div>Sex is required</div>
+          </div>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input  type="text" [autocomplete]="true" class="form-control" name="email" placeholder="Email" [(ngModel)]="model.email" #email="ngModel" [ngClass]="{ 'is-invalid': f.submitted && email.invalid }" required />
+        <div *ngIf="f.submitted && email.invalid" class="invalid-feedback">
+            <div *ngIf="email?.errors?.required">Email is required</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="form-group">
+        <label for="phoneNumber">Phone Number</label>
+        <input  type="text" [autocomplete]="true" class="form-control" appPhoneMask name="phoneNumber" autocomplete="off" placeholder="Phone Number" [(ngModel)]="model.phoneNumber" #phoneNumber="ngModel" [ngClass]="{ 'is-invalid': f.submitted && phoneNumber.invalid }" required />
+        <div *ngIf="f.submitted && phoneNumber.invalid" class="invalid-feedback">
+            <div *ngIf="phoneNumber?.errors?.required">Phone Number is required</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="form-group">
+        <label for="addressOne">Address 1</label>
+        <input  type="text" class="form-control" name="addressOne" placeholder="Address 1" [(ngModel)]="model.addressOne" #addressOne="ngModel" [ngClass]="{ 'is-invalid': f.submitted && addressOne.invalid }" required/>
+        <div *ngIf="f.submitted && addressOne.invalid" class="invalid-feedback">
+            <div *ngIf="addressOne?.errors?.required">Address 1 is required</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="form-group">
+        <label for="addressTwo">Address 2</label>
+        <input  type="text" class="form-control" name="addressTwo" placeholder="Address 2" [(ngModel)]="model.addressTwo" #addressTwo="ngModel" [ngClass]="{ 'is-invalid': f.submitted && addressTwo.invalid }" />
+        <div *ngIf="f.submitted && addressTwo.invalid" class="invalid-feedback">
+            <div *ngIf="addressTwo?.errors?.required">Address 2 is required</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="form-group">
+        <label for="city">City</label>
+        <input  type="text" class="form-control" name="city" placeholder="City" [(ngModel)]="model.city" #city="ngModel" [ngClass]="{ 'is-invalid': f.submitted && city.invalid }" required/>
+        <div *ngIf="f.submitted && city.invalid" class="invalid-feedback">
+            <div *ngIf="city?.errors?.required">City is required</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="form-group">
+        <label for="state">State</label>
+        <select  class="form-control" name="state" [(ngModel)]="model.state"
+        [ngClass]="{'is-invalid':f.submitted && state.invalid}" #state="ngModel" required>
+            <option [ngValue]="undefined" selected>Select</option>
+            <option *ngFor="let stateValue of states; let j = index" [ngValue]="stateValue">{{stateValue.stateName}}</option>
+          </select>
+          <div class="invalid-feedback">
+            <div>State is required</div>
+          </div>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="form-group">
+        <label for="zipCode">Zip Code</label>
+        <input  type="text" class="form-control" name="zipCode" placeholder="Zip Code" [(ngModel)]="model.zipCode" #zipCode="ngModel" [ngClass]="{ 'is-invalid': f.submitted && zipCode.invalid }" required/>
+        <div *ngIf="f.submitted && zipCode.invalid" class="invalid-feedback">
+            <div *ngIf="zipCode?.errors?.required">Zip Code is required</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="form-group">
+          <label for="consentResult">Confidentiality Consent</label>
+          <div>
+          <a href="" (click)="open(lesson)">Confidentiality Consent</a>
+        </div>
+        <div class="invalid">
+          <div *ngIf="f.submitted && (model.consentResult == undefined || model.consentResult == false)">Consent Approval is required</div>
+      </div>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="form-group">
+            <label for="consent">Result Sharing Consent</label>
+            <select  class="form-control" name="consent" [(ngModel)]="model.consent"
+            [ngClass]="{'is-invalid':f.submitted && consent.invalid}" #consent="ngModel" required>
+                <option [ngValue]="undefined" selected>Select</option>
+                <option *ngFor="let consentValue of consentList; let j = index" [value]="consentValue">{{consentValue}}</option>
+            </select>
+            <div class="invalid-feedback">
+              <div>Result Sharing Consent</div>
+            </div>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="form-group">
+          <label style="margin: 0px;" for="initials">By Typing My Initials</label>
+          <div><span style="font-size: 10px;font-weight: 500;">I Certify the information provided to be true and correct to the best of my knowledge</span></div>
+          <input  type="text" class="form-control" name="initials" placeholder="By Typing My Initials" [(ngModel)]="model.initials" #initials="ngModel" [ngClass]="{ 'is-invalid': f.submitted && initials.invalid }" required/>
+          <div *ngIf="f.submitted && initials.invalid" class="invalid-feedback">
+              <div *ngIf="initials?.errors?.required">Initials is required</div>
+          </div>
+        </div>
+      </div>
+ <div class="col-md-6">
+         <div class="form-group form-check">
+          <input type="checkbox" name="responseCopy" id="responseCopy" class="form-check-input" [(ngModel)]="model.responseCopy" #responseCopy="ngModel"
+          [ngClass]="{ 'is-invalid': f.submitted && responseCopy.invalid }">
+          <label style="color: black;" for="responseCopy" class="form-check-label responseCopy-check">
+          Send me a copy of my response</label>
+        </div>
+    </div>
+  </div>
+  <button style="float: right;" type="submit" class="btn btn-primary custom-btn custom-primay">Submit</button>
+</form>
+</div>
+
+
+<ng-template #lesson>
+  <div class="modal-header">
+    <h5 class="modal-title">Confidentiality Consent</h5>
+    <button type="button" class="close" aria-label="Close" (click)="closeModal()">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+      <div class="col-md-12 row display-flex" style="padding: 0px;margin: 0px;">
+        <p class="terms-css">
+          My test results are my confidential medical information.
+          A positive COVID-19 test result may require identifying me as an individual who tested positive for COVID-19,
+          in order to appropriately warn others so they may take the necessary precautions related to possible exposure
+          to COVID-19. Additionally, the local health authority and/or CDC may follow up with me and people
+          I have been in contact with to discuss necessary steps for stopping further spread of the virus.</p>
+          <p class="terms-css">
+            If an effective public health communication can be made without identifying me,
+            my name will not be used.  However, it may not be possible to inform others of a potential exposure to COVID-19
+            without determining that it was through contact with me.
+          </p>
+          <p class="terms-css">
+            I understand that by agreeing to this,
+            my information relating to this test may no longer be protected by federal privacy regulations.
+          </p>
+          <p class="terms-css">
+            Bindle Systems has contracted with Kwokman Diagnostics to provide seamless management of
+            Covid-19 test results in accordance with CDC Guidelines; accordingly,
+            I authorize Kwokman Diagnostics to release my test results to Bindle Systems.</p>
+        <div class="col-md-12 row">
+          <div class="col-md-6">
+          <div class="form-group form-check">
+           <input type="checkbox" name="consentTerms" id="consentTerms" class="form-check-input"
+           [(ngModel)]="consentResultPop" #consentTerms="ngModel">
+           <label style="color: black;" for="consentResultPop" class="form-check-label responseCopy-check">
+            Confidentiality Consent</label>
+         </div>
+        </div>
+        <div class="col-md-6">
+         <button style="float: right;" class="btn btn-primary" type="button" (click)="termsCond()">Submit</button></div>
+     </div>
+      </div>
+      </div>
+</ng-template>
+
+<router-outlet></router-outlet>
