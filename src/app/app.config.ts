@@ -3,4 +3,5 @@ export class AppConfig {
   public static getLocations = '/registration/getOrgAndProjects';
   public static saveQuestionaire = "/registration/intakeUserCreate";
   public static getCountryAndStates = '/master/getCountryAndStates';
+
 }
