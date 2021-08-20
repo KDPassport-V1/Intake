@@ -1,7 +1,7 @@
 export class AppConfig {
-  public static API_PATH = 'https://kdpassportv1dev.azurewebsites.net/kdapp/api/v1';
+  public static API_PATH = 'https://kdpassportv1dev.azurewebsites.net/kdapp';
   public static getLocations = '/registration/getOrgAndProjects';
   public static saveQuestionaire = "/registration/intakeUserCreate";
-  public static getCountryAndStates = '/master/getCountryAndStates';
+  public static getCountryAndStates = '/registration/getCountryAndStates';
 
 }
