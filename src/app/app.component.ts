@@ -168,4 +168,56 @@ export class AppComponent implements OnInit {
     }
     this.closeModal();
   }
+  validate(){
+    let df = this.model.dob
+    let dateformat = /^(0?[1-9]|1[0-2])[\-](0?[1-9]|[1-2][0-9]|3[01])[\-]\d{4}$/;      
+          
+    // Match the date format through regular expression  
+        
+    if(df.match(dateformat)){   
+      console.log("hii");
+        let operator = df.split('-');
+        let datepart:any[] = [];      
+        if (operator.length>1){      
+            datepart = df.split('-');      
+        }      
+        let month= parseInt(datepart[0]);      
+        let day = parseInt(datepart[1]);      
+        let year = parseInt(datepart[2]);      
+        // Create list of days of a month      
+        let ListofDays = [31,28,31,30,31,30,31,31,30,31,30,31];      
+        if (month==1 || month>2){      
+            if (day>ListofDays[month-1]){      
+                ///This check is for Confirming that the date is not out of its range 
+                this.toast.error("Date is not out of its range!", 'Error')     
+                return false;      
+            }      
+        }else if (month==2){      
+            let leapYear = false;      
+            if ( (!(year % 4) && year % 100) || !(year % 400)) {      
+                leapYear = true;      
+            }      
+            if ((leapYear == false) && (day>=29)){      
+                return false;      
+            }else      
+            if ((leapYear==true) && (day>29)){      
+                this.toast.error("Invalid date format!", 'Error')
+                return false;      
+            }      
+        }
+        this.model.dob = {year: parseInt(datepart[2]), month:parseInt(datepart[0]), day: parseInt(datepart[1])}    
+    }else{
+        console.log("Invalid date format!");  
+        this.toast.error("Invalid date format!", 'Error')    
+        return false;      
+    } 
+    return true;  
+  }
+  isValidDate(year:any, month:any, day:any) {
+    var d = new Date(year, month, day);
+    if (d.getFullYear() == year && d.getMonth() == month && d.getDate() == day) {
+        return true;
+    }
+    return false;
+}
 }

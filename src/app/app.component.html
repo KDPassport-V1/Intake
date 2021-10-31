@@ -43,8 +43,8 @@
         <label for="dob">Date Of Birth</label>
         <div class="input-group">
           <input class="form-control"  placeholder="Date Of Birth" name="dob" [maxDate]="maxDate"
-           #c3="ngModel" [(ngModel)]="model.dob" (click)="dob.toggle();"
-           ngbDatepicker #dob="ngbDatepicker" [readonly]="true"
+           #c3="ngModel" [(ngModel)]="model.dob" (blur)="validate();"
+           ngbDatepicker #dob="ngbDatepicker"
            [minDate]="{year: 1900, month:1, day: 1}"
            [ngClass]="{ 'is-invalid': f.submitted && c3.invalid }" required/>
           <div class="input-group-append" style="z-index: 0;">
