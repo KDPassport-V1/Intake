@@ -40,9 +40,9 @@
     </div>
     <div class="col-md-6">
       <div class="form-group">
-        <label for="dob">Date Of Birth</label>
+        <label for="dob">Date Of Birth <span style="font-size: 14px;font-weight: 500;">( MM-DD-YYYY )</span></label>
         <div class="input-group">
-          <input class="form-control"  placeholder="Date Of Birth" name="dob" [maxDate]="maxDate"
+          <input class="form-control"  placeholder="MM-DD-YYYY" name="dob" [maxDate]="maxDate"
            #c3="ngModel" [(ngModel)]="model.dob" (blur)="validate();"
            ngbDatepicker #dob="ngbDatepicker"
            [minDate]="{year: 1900, month:1, day: 1}"
