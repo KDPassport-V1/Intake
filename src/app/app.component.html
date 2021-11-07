@@ -171,7 +171,7 @@
     <div class="col-md-6">
       <div class="form-group">
         <label for="zipCode">Zip Code</label>
-        <input  type="text" class="form-control" name="zipCode" placeholder="Zip Code" [(ngModel)]="model.zipCode" #zipCode="ngModel" [ngClass]="{ 'is-invalid': f.submitted && zipCode.invalid }" required/>
+        <input  type="text" class="form-control" maxlength="5" name="zipCode" placeholder="Zip Code" [(ngModel)]="model.zipCode" #zipCode="ngModel" [ngClass]="{ 'is-invalid': f.submitted && zipCode.invalid }" required/>
         <div *ngIf="f.submitted && zipCode.invalid" class="invalid-feedback">
             <div *ngIf="zipCode?.errors?.required">Zip Code is required</div>
         </div>
