@@ -17,12 +17,15 @@ export class AppComponent implements OnInit {
   companyList :any[] = []
   consentResultList :any[] = ["Yes","No"];
   consentList :any[] = ["Only Me","Me and the Company Listed above"];
+  vaccineList:any[] = ["Pfizer", "Moderna", "Johnson & Johnson's"];
   employeeVal : boolean = false;
   locationList :any[] = [];
   states: any[] = [];
   maxDate: any;
   consentResultPop: any;
   countries: any[] = [];
+  public cardObj: any = {}
+  public vaccinedetails: any ;
   constructor(private toast : ToastrService,private emp : EmployeeService, private modal : NgbModal,){}
 
   ngOnInit(){
@@ -53,7 +56,9 @@ export class AppComponent implements OnInit {
   onFormPage(){
     this.employeeVal = true
   }
-  onFinalSubmit(){
+  onFinalSubmit(lesson:any){
+    const modalRef = this.modal.open(lesson);
+    modalRef.componentInstance.lesson = lesson;
     let reqObj = {
       "firstName": this.model.firstName,
       "lastName": this.model.lastName,
@@ -123,6 +128,8 @@ export class AppComponent implements OnInit {
     this.employeeVal = false
     this.model = {}
     this.locationList = []
+    this.cardObj = {}
+    this.vaccinedetails = undefined
     this.model.consentResult = undefined
     this.consentResultPop = undefined
     }else{
@@ -162,6 +169,53 @@ export class AppComponent implements OnInit {
   termsCond(){
     if(this.consentResultPop){
       this.model.consentResult = this.consentResultPop
+
+      let obj = {
+        "dcId": 1,
+        "orgId": this.model.company.id,
+        "projectId": parseInt(this.model.loc),
+        "suffix": "Mr",
+        "firstName": this.model.firstName,
+        "lastName": this.model.lastName,
+        "middleName": "",
+        "email":  this.model.email,
+        "phone": this.model.phoneNumber.length > 14
+        ? this.model.phoneNumber.substring(0, this.model.phoneNumber.length - 1) : this.model.phoneNumber,
+        "dob": this.dateToRequest(this.model.dob),
+        "race": this.model.race,
+        "gender": this.model.sex,
+        "homePhoneNumber": "",
+        "drivingLicenseNumber": "",
+        "drivingLicenseState": "",
+        "consentResult": this.model.consent,
+        "consent": this.model.consentResult == true ? 'Yes' : 'No',
+        "byTypingMyInitials": this.model.initials,
+        "sendMeACopy": this.model.responseCopy,
+        "address": [
+        {
+          "addr1": this.model.addressOne,
+          "addr2": this.model.addressTwo,
+          "city": this.model.city,
+          "zipcode": this.model.zipCode,
+          "countryPhoneCode": this.model.country.phoneCode,
+          "country": {
+          "id": this.model.country.id,
+          "countryName": this.model.country.countryName,
+          },
+          "state": this.model.state
+        }
+        ],
+        vaccine: {
+          "vaccineType" : "COVID-19",
+          "manufacturer" : this.model.manufacturer,
+          "doseDate" : this.model.vaccineDoseDate ? this.dateToRequest(this.model.vaccineDoseDate) : null,
+          "vaccineCardFileName" : this.cardObj.fileName,
+          "vaccineCardFile" : this.cardObj.file
+        }
+      }
+      if(this.model.consentResult){
+      this.emp.createEmployee(obj).subscribe((data) => {this.successCallBack(data)})
+      }
     }
     else {
       this.model.consentResult = undefined
@@ -213,11 +267,82 @@ export class AppComponent implements OnInit {
     } 
     return true;  
   }
+  validateVacineDose(){
+    let df = this.model.vaccineDoseDate
+    let dateformat = /^(0?[1-9]|1[0-2])[\-](0?[1-9]|[1-2][0-9]|3[01])[\-]\d{4}$/;      
+          
+    // Match the date format through regular expression  
+        
+    if(df.match(dateformat)){   
+      console.log("hii");
+        let operator = df.split('-');
+        let datepart:any[] = [];      
+        if (operator.length>1){      
+            datepart = df.split('-');      
+        }      
+        let month= parseInt(datepart[0]);      
+        let day = parseInt(datepart[1]);      
+        let year = parseInt(datepart[2]);      
+        // Create list of days of a month      
+        let ListofDays = [31,28,31,30,31,30,31,31,30,31,30,31];      
+        if (month==1 || month>2){      
+            if (day>ListofDays[month-1]){      
+                ///This check is for Confirming that the date is not out of its range 
+                this.toast.error("Date is not out of its range!", 'Error')     
+                return false;      
+            }      
+        }else if (month==2){      
+            let leapYear = false;      
+            if ( (!(year % 4) && year % 100) || !(year % 400)) {      
+                leapYear = true;      
+            }      
+            if ((leapYear == false) && (day>=29)){      
+                return false;      
+            }else      
+            if ((leapYear==true) && (day>29)){      
+                this.toast.error("Invalid date format!", 'Error')
+                return false;      
+            }      
+        }
+        this.model.vaccineDoseDate = {year: parseInt(datepart[2]), month:parseInt(datepart[0]), day: parseInt(datepart[1])}    
+    }else{
+        console.log("Invalid date format!");  
+        this.toast.error("Invalid date format!", 'Error')    
+        return false;      
+    } 
+    return true;  
+  }
   isValidDate(year:any, month:any, day:any) {
     var d = new Date(year, month, day);
     if (d.getFullYear() == year && d.getMonth() == month && d.getDate() == day) {
         return true;
     }
     return false;
-}
+  }
+  upload(files:any){
+    console.log(files.target.files);
+    let card = files.target.files[0];
+    this.getBase64(card).then((data: any) => {
+      const temp = {
+          fileName: card.name,
+          file: data.split(',')[1],
+      };
+      console.log(temp);
+      this.cardObj = temp
+  });
+  }
+  getBase64(file:any) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = error => reject(error);
+    });
+  }
+
+  handleChange(evt:any) {
+    var target = evt.target.value;
+    console.log(target);
+    (target == 'yes' && this.model.company.vaccineRequired == 'true') ? this.vaccinedetails = true : this.vaccinedetails = false
+  }
 }

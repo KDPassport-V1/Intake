@@ -18,7 +18,7 @@
   <!-- <div class="card highlight-card card-small">
     <span>{{ title }} app is running!</span>
   </div> -->
-  <form name="form" (ngSubmit)="f.form.valid && onFinalSubmit()" #f="ngForm" novalidate>
+  <form name="form" (ngSubmit)="f.form.valid && onFinalSubmit(lesson)" #f="ngForm" novalidate>
   <div class="col-md-12 row">
     <div class="col-md-6">
       <div class="form-group">
@@ -62,7 +62,7 @@
       <div class="form-group">
           <label for="company">Company</label>
           <select  class="form-control" name="company" [(ngModel)]="model.company" (change)="onCompanyChange($event)"
-          [ngClass]="{'is-invalid':f.submitted && company.invalid}" #company="ngModel" required>
+          [ngClass]="{'is-invalid':f.submitted && company.invalid}" #company="ngModel" >
               <option [ngValue]="undefined" selected>Select</option>
               <option *ngFor="let companyVal of companyList; let j = index" [ngValue]="companyVal">{{companyVal.name}}</option>
             </select>
@@ -75,7 +75,7 @@
         <div class="form-group">
             <label for="loc">Location</label>
             <select  class="form-control" name="loc" [(ngModel)]="model.loc"
-            [ngClass]="{'is-invalid':f.submitted && loc.invalid}" #loc="ngModel" required>
+            [ngClass]="{'is-invalid':f.submitted && loc.invalid}" #loc="ngModel" >
                 <option [ngValue]="undefined" selected>Select</option>
                 <option *ngFor="let locValue of locationList; let j = index" [value]="locValue.id">{{locValue.name}}</option>
               </select>
@@ -159,7 +159,7 @@
       <div class="form-group">
         <label for="state">State</label>
         <select  class="form-control" name="state" [(ngModel)]="model.state"
-        [ngClass]="{'is-invalid':f.submitted && state.invalid}" #state="ngModel" required>
+        [ngClass]="{'is-invalid':f.submitted && state.invalid}" #state="ngModel" >
             <option [ngValue]="undefined" selected>Select</option>
             <option *ngFor="let stateValue of states; let j = index" [ngValue]="stateValue">{{stateValue.stateName}}</option>
           </select>
@@ -177,7 +177,7 @@
         </div>
       </div>
     </div>
-    <div class="col-md-6">
+    <!-- <div class="col-md-6">
       <div class="form-group">
           <label for="consentResult">Confidentiality Consent</label>
           <div>
@@ -187,7 +187,7 @@
           <div *ngIf="f.submitted && (model.consentResult == undefined || model.consentResult == false)">Consent Approval is required</div>
       </div>
         </div>
-      </div>
+      </div> -->
       <div class="col-md-6">
         <div class="form-group">
             <label for="consent">Result Sharing Consent</label>
@@ -211,14 +211,133 @@
           </div>
         </div>
       </div>
- <div class="col-md-6">
-         <div class="form-group form-check">
-          <input type="checkbox" name="responseCopy" id="responseCopy" class="form-check-input" [(ngModel)]="model.responseCopy" #responseCopy="ngModel"
-          [ngClass]="{ 'is-invalid': f.submitted && responseCopy.invalid }">
-          <label style="color: black;" for="responseCopy" class="form-check-label responseCopy-check">
-          Send me a copy of my response</label>
+      <div class="col-md-6">
+        <div class="form-group form-check">
+         <input type="checkbox" name="responseCopy" id="responseCopy" class="form-check-input" [(ngModel)]="model.responseCopy" #responseCopy="ngModel"
+         [ngClass]="{ 'is-invalid': f.submitted && responseCopy.invalid }">
+         <label style="color: black;" for="responseCopy" class="form-check-label responseCopy-check">
+         Send me a copy of my response</label>
+       </div>
+     </div>
+     <div *ngIf="model?.company.vaccineRequired == 'true'" class="col-md-12">
+      <div class="form-group">
+        <label style="margin: 0px" for="fvaccinates"> Are you fully vaccinated? </label>
+        <div>
+          <span style="font-size: 12px; font-weight: 500">
+            2 weeks after the 2nd dose in a 2-dose series, such as Pfizer or Moderna vaccines, OR 2 weeks after a single-dose vaccine, such as Johnson & Johnson's  vaccine.
+          </span>
         </div>
+        <div class="row check-css">
+          <div class="form-check check-align">
+            <input class="form-check-input" type="radio" [(ngModel)]="model.ques" (change)="handleChange($event)" #ques="ngModel" name="ques"
+              id="yes" value="yes" required>
+            <label class="form-check-label" for="yes">
+              YES
+            </label>
+          </div>
+          <div class="form-check">
+            <input class="form-check-input" type="radio" [(ngModel)]="model.ques" (change)="handleChange($event)" #ques="ngModel" name="ques"
+              id="no" value="no" required>
+            <label class="form-check-label" for="no">
+              NO
+            </label>
+          </div>
+        </div>
+      </div>
     </div>
+    <ng-container *ngIf="vaccinedetails">
+      <div class="col-md-6">
+        <div class="form-group">
+          <label for="manufacturer">Manufacturer</label>
+          <select
+            class="form-control"
+            name="manufacturer"
+            [(ngModel)]="model.manufacturer"
+            [ngClass]="{ 'is-invalid': f.submitted && manufacturer.invalid }"
+            #manufacturer="ngModel"
+            required
+          >
+            <option [ngValue]="undefined" selected>Select</option>
+            <option
+              *ngFor="let manufacturerValue of vaccineList; let j = index"
+              [value]="manufacturerValue"
+            >
+              {{ manufacturerValue }}
+            </option>
+          </select>
+          <div class="invalid-feedback">
+            <div>Manufacturer is required</div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="form-group">
+          <label for="vaccineDoseDate">Vaccine Dose Date<span style="font-size: 14px;font-weight: 500;">( MM-DD-YYYY )</span></label>
+          <div class="input-group">
+            <input
+              class="form-control"
+              placeholder="MM-DD-YYYY"
+              name="vaccineDoseDate"
+              [maxDate]="maxDate"
+              #v3="ngModel"
+              [(ngModel)]="model.vaccineDoseDate"
+              (blur)="validateVacineDose()"
+              ngbDatepicker
+              #vaccineDoseDate="ngbDatepicker"
+              [minDate]="{ year: 1900, month: 1, day: 1 }"
+              [ngClass]="{ 'is-invalid': f.submitted && v3.invalid }"
+              required
+            />
+            <div class="input-group-append" style="z-index: 0">
+              <button
+                style="padding: 3px 10px"
+                class="btn btn-outline-secondary"
+                (click)="vaccineDoseDate.toggle()"
+                type="button"
+              >
+                <i class="fa fa-calendar" aria-hidden="true"></i>
+              </button>
+            </div>
+            <div
+              *ngIf="f.submitted && v3.invalid"
+              class="invalid-feedback"
+              style="display: block"
+            >
+              <div *ngIf="v3?.errors?.required">Vaccine Dose Date is required</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="form-group">
+          <label for="vaccineCrd">Upload Vaccine Card</label>
+          <input type="file" (change)="upload($event)" name="file" [(ngModel)]="model.card" #card="ngModel"/>
+        </div>
+        <div class="invalid-feedback">
+          <div>Vaccine card is required</div>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="form-group form-check">
+          <input
+            type="checkbox"
+            name="agreement"
+            id="agreement"
+            class="form-check-input"
+            [(ngModel)]="model.agreement"
+            #agreement="ngModel"
+            [ngClass]="{ 'is-invalid': f.submitted && agreement.invalid }"
+          />
+          <label
+            style="color: black"
+            for="agreement"
+            class="form-check-label responseCopy-check"
+          >
+          I Agree</label
+          >
+        </div>
+      </div>
+    </ng-container>
   </div>
   <button style="float: right;" type="submit" class="btn btn-primary custom-btn custom-primay">Submit</button>
 </form>
@@ -263,7 +382,7 @@
          </div>
         </div>
         <div class="col-md-6">
-         <button style="float: right;" class="btn btn-primary" type="button" (click)="termsCond()">Submit</button></div>
+         <button [disabled]="!consentResultPop" style="float: right;" class="btn btn-primary" type="button" (click)="termsCond()">Submit</button></div>
      </div>
       </div>
       </div>
