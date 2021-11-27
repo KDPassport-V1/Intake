@@ -62,7 +62,7 @@
       <div class="form-group">
           <label for="company">Company</label>
           <select  class="form-control" name="company" [(ngModel)]="model.company" (change)="onCompanyChange($event)"
-          [ngClass]="{'is-invalid':f.submitted && company.invalid}" #company="ngModel" >
+          [ngClass]="{'is-invalid':f.submitted && company.invalid}" #company="ngModel" required>
               <option [ngValue]="undefined" selected>Select</option>
               <option *ngFor="let companyVal of companyList; let j = index" [ngValue]="companyVal">{{companyVal.name}}</option>
             </select>
@@ -75,7 +75,7 @@
         <div class="form-group">
             <label for="loc">Location</label>
             <select  class="form-control" name="loc" [(ngModel)]="model.loc"
-            [ngClass]="{'is-invalid':f.submitted && loc.invalid}" #loc="ngModel" >
+            [ngClass]="{'is-invalid':f.submitted && loc.invalid}" #loc="ngModel" required>
                 <option [ngValue]="undefined" selected>Select</option>
                 <option *ngFor="let locValue of locationList; let j = index" [value]="locValue.id">{{locValue.name}}</option>
               </select>
@@ -159,7 +159,7 @@
       <div class="form-group">
         <label for="state">State</label>
         <select  class="form-control" name="state" [(ngModel)]="model.state"
-        [ngClass]="{'is-invalid':f.submitted && state.invalid}" #state="ngModel" >
+        [ngClass]="{'is-invalid':f.submitted && state.invalid}" #state="ngModel" required>
             <option [ngValue]="undefined" selected>Select</option>
             <option *ngFor="let stateValue of states; let j = index" [ngValue]="stateValue">{{stateValue.stateName}}</option>
           </select>
