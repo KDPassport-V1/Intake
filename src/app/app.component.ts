@@ -344,5 +344,8 @@ export class AppComponent implements OnInit {
     var target = evt.target.value;
     console.log(target);
     (target == 'yes' && this.model.company.vaccineRequired == 'true') ? this.vaccinedetails = true : this.vaccinedetails = false
+    if(target == 'no'){
+      this.toast.warning('Your company requires vaccine information', 'Warning');
+    }
   }
 }
