@@ -74,7 +74,7 @@
       <div class="col-md-6">
         <div class="form-group">
             <label for="loc">Location</label>
-            <select  class="form-control" name="loc" [(ngModel)]="model.loc"
+            <select  class="form-control" name="loc" [(ngModel)]="model.loc" (change)="onLocationChange($event)"
             [ngClass]="{'is-invalid':f.submitted && loc.invalid}" #loc="ngModel" required>
                 <option [ngValue]="undefined" selected>Select</option>
                 <option *ngFor="let locValue of locationList; let j = index" [value]="locValue.id">{{locValue.name}}</option>
@@ -122,10 +122,13 @@
     <div class="col-md-6">
       <div class="form-group">
         <label for="phoneNumber">Phone Number</label>
-        <input  type="text" [autocomplete]="true" class="form-control" appPhoneMask name="phoneNumber" autocomplete="off" placeholder="Phone Number" [(ngModel)]="model.phoneNumber" #phoneNumber="ngModel" [ngClass]="{ 'is-invalid': f.submitted && phoneNumber.invalid }" required />
+        <input  type="text" minlength="14" maxlength="14" [autocomplete]="true" class="form-control" appPhoneMask name="phoneNumber" autocomplete="off" placeholder="Phone Number" [(ngModel)]="model.phoneNumber" #phoneNumber="ngModel" [ngClass]="{ 'is-invalid': f.submitted && phoneNumber.invalid }" required />
         <div *ngIf="f.submitted && phoneNumber.invalid" class="invalid-feedback">
             <div *ngIf="phoneNumber?.errors?.required">Phone Number is required</div>
         </div>
+        <div *ngIf="f.submitted && model?.phoneNumber?.length < 14 && phoneNumber.touched" class="invalid-feedback">
+          <div>Please enter a 10-digit Phone Number</div>
+      </div>
       </div>
     </div>
     <div class="col-md-6">
@@ -219,7 +222,7 @@
          Send me a copy of my response</label>
        </div>
      </div>
-     <div *ngIf="model?.company?.vaccineRequired == 'true'" class="col-md-12">
+     <div *ngIf="model?.company?.vaccineRequired" class="col-md-12">
       <div class="form-group">
         <label style="margin: 0px" for="fvaccinates"> Are you fully vaccinated? </label>
         <div>
@@ -308,7 +311,7 @@
           </div>
         </div>
       </div>
-      <div class="col-md-6">
+      <!-- <div class="col-md-6">
         <div class="form-group">
           <label for="vaccineCrd">Upload Vaccine Card</label>
           <input type="file" (change)="upload($event)" name="file" [(ngModel)]="model.card" #card="ngModel"/>
@@ -316,8 +319,65 @@
         <div class="invalid-feedback">
           <div>Vaccine card is required</div>
         </div>
-      </div>
-      <div class="col-md-6">
+      </div> -->
+      <ng-container *ngIf="(model?.company?.vaccineRequiredOption == 'VACCINE_CARD_ONLY' || model?.company?.vaccineRequiredOption == 'BOTH_CARD_AND_ATTESTATION')">
+        <div class="col-md-6">
+          <div class="form-group">
+            <label for="frontVaccineCard">Upload front side Vaccine Card</label>
+            <input type="file" (change)="frontUpload($event)" name="file" [(ngModel)]="model.frontCard" #card="ngModel"/>
+          </div>
+          <div class="invalid-feedback">
+            <div>Vaccine card is required</div>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="form-group">
+            <label for="backVaccineCrd">Upload back side Vaccine Card</label>
+            <input type="file" (change)="backUpload($event)" name="file" [(ngModel)]="model.backCard" #card="ngModel"/>
+          </div>
+          <div class="invalid-feedback">
+            <div>Vaccine card is required</div>
+          </div>
+        </div>
+        </ng-container>
+        <div class="col-md-6" *ngIf="(model?.company?.vaccineRequiredOption == 'ATTESTATION_ONLY' || model?.company?.vaccineRequiredOption == 'BOTH_CARD_AND_ATTESTATION')">
+          <div class="form-group">
+            <label for="attestationLink">Attestation Link</label>
+            <div>
+              <a href="" (click)="openAttestationLink(attest)">Attestation Link</a>
+            </div>
+            <div class="invalid">
+              <div *ngIf="f.submitted && (model.attestationFlag == undefined || model.attestationFlag == false)">
+                Attestation Link is required
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="form-group">
+            <label for="doseNum">Dose Number</label>
+            <select
+              class="form-control"
+              name="doseNum"
+              [(ngModel)]="model.doseNum"
+              [ngClass]="{ 'is-invalid': f.submitted && doseNum.invalid }"
+              #doseNum="ngModel"
+              required
+            >
+              <option [ngValue]="undefined" selected>Select</option>
+              <option
+                *ngFor="let doseNumValue of doseNumList; let j = index"
+                [value]="doseNumValue"
+              >
+                {{ doseNumValue }}
+              </option>
+            </select>
+            <div class="invalid-feedback">
+              <div>Dose Number is required</div>
+            </div>
+          </div>
+        </div>
+      <div class="col-md-12">
         <div class="form-group form-check">
           <input
             type="checkbox"
@@ -357,6 +417,10 @@
   </div>
   <div class="modal-body">
       <div class="col-md-12 row display-flex" style="padding: 0px;margin: 0px;">
+        <ng-container *ngIf="dynamicIntakeConsentText?.length > 0; else genericConsent">
+          <div [innerHTML]="dynamicIntakeConsentText"></div>
+        </ng-container>
+        <ng-template #genericConsent>
         <p class="terms-css">
           My test results are my confidential medical information. A positive COVID-19 test result may require identifying 
           me as an individual who tested positive for COVID-19, in order to appropriately warn others so they may take the 
@@ -384,6 +448,7 @@
             I understand that Kwokman Diagnostics will provide the results of my testing for SARS-CoV-2 to My Employers, 
             COVID compliance officers and its designees for the purpose of evaluating and responding to COVID- 19 risks to myself and other employees. 
             This release shall bind me, my heirs, executors, administrators and assigns.</p>
+          </ng-template>
         <div class="col-md-12 row">
           <div class="col-md-6">
           <div class="form-group form-check">
@@ -398,6 +463,63 @@
      </div>
       </div>
       </div>
+</ng-template>
+
+<ng-template #attest>
+  <div class="modal-header">
+    <h5 class="modal-title">Vaccine Attestation</h5>
+    <button
+      type="button"
+      class="close"
+      aria-label="Close"
+      (click)="closeModal()"
+    >
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <div class="col-md-12 row display-flex" style="padding: 0px; margin: 0px">
+      <p class="terms-css">
+        I attest that all information provided is true, accurate, and complete to the best of my
+        knowledge. I understand that any falsification, omission, or concealment of material fact 
+        may subject me to administrative, civil, or criminal liability.</p>
+        <div class="terms-css">
+          Digitally Signed by 
+          <div class="col-md-12 row">
+          <input
+            type="text"
+            class="form-control"
+            name="attestedFirstName"
+            placeholder="First Name"
+            [(ngModel)]="attestationFirstName"
+            #attestedFirstName="ngModel"
+            required
+          />
+          <input
+            type="text"
+            class="form-control"
+            name="attestedLastName"
+            placeholder="Last Name"
+            [(ngModel)]="attestationLastName"
+            #attestedLastName="ngModel"
+            required
+          /></div>
+          </div>
+      <div class="col-md-12 row">
+        <div class="col-md-12">
+          <button
+            style="float: right"
+            class="btn btn-primary spec-btn"
+            type="button"
+            (click)="attestationSubmit()"
+            [disabled]="(!attestationFirstName && !attestationLastName)"
+          >
+            Submit
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
 </ng-template>
 
 <router-outlet></router-outlet>

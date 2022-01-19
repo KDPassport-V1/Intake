@@ -18,6 +18,7 @@ export class AppComponent implements OnInit {
   consentResultList :any[] = ["Yes","No"];
   consentList :any[] = ["Only Me","Me and the Company Listed above"];
   vaccineList:any[] = ["Pfizer", "Moderna", "Johnson & Johnson's"];
+  doseNumList:any[] = ["1", "2", "Booster"]
   employeeVal : boolean = false;
   locationList :any[] = [];
   states: any[] = [];
@@ -26,6 +27,12 @@ export class AppComponent implements OnInit {
   countries: any[] = [];
   public cardObj: any = {}
   public vaccinedetails: any ;
+  public frontCardObj: any = {}
+  public backCardObj: any = {}
+  attestationLastName: any;
+  attestationFirstName: any;
+  submitDisadble: boolean = false;
+  dynamicIntakeConsentText: any;
   constructor(private toast : ToastrService,private emp : EmployeeService, private modal : NgbModal,){}
 
   ngOnInit(){
@@ -57,76 +64,84 @@ export class AppComponent implements OnInit {
     this.employeeVal = true
   }
   onFinalSubmit(lesson:any){
+    if((this.model.company.vaccineRequiredOption != 'VACCINE_CARD_ONLY' && this.model.ques == 'yes') ? this.model.attestationFlag : true){
     const modalRef = this.modal.open(lesson);
     modalRef.componentInstance.lesson = lesson;
-    let reqObj = {
-      "firstName": this.model.firstName,
-      "lastName": this.model.lastName,
-      "email": this.model.email,
-      "phoneNumber": this.model.phoneNumber.length > 14
-      ? this.model.phoneNumber.substring(0, this.model.phoneNumber.length - 1) : this.model.phoneNumber,
-      "dateOfBirth":this.dateToRequest(this.model.dob),
-      "race": this.model.race,
-      "gender": this.model.sex,
-      "address1":this.model.addressOne,
-      "address2":this.model.addressTwo,
-      "city": this.model.city,
-      "zipCode": this.model.zipCode,
-      "consentForResults": this.model.consentResult == true ? 'Yes' : 'No',
-      "consent": this.model.consent,
-      "byTypingMyInitials":this.model.initials,
-      "state":this.model.state,
-      "company": this.model.company.accountName,
-      "sendMeACopy": this.model.responseCopy,
-      "accountId": this.model.company.id,
-      "locationId" : parseInt(this.model.loc)
     }
+    // let reqObj = {
+    //   "firstName": this.model.firstName,
+    //   "lastName": this.model.lastName,
+    //   "email": this.model.email,
+    //   "phoneNumber": this.model.phoneNumber.length > 14
+    //   ? this.model.phoneNumber.substring(0, this.model.phoneNumber.length - 1) : this.model.phoneNumber,
+    //   "dateOfBirth":this.dateToRequest(this.model.dob),
+    //   "race": this.model.race,
+    //   "gender": this.model.sex,
+    //   "address1":this.model.addressOne,
+    //   "address2":this.model.addressTwo,
+    //   "city": this.model.city,
+    //   "zipCode": this.model.zipCode,
+    //   "consentForResults": this.model.consentResult == true ? 'Yes' : 'No',
+    //   "consent": this.model.consent,
+    //   "byTypingMyInitials":this.model.initials,
+    //   "state":this.model.state,
+    //   "company": this.model.company.accountName,
+    //   "sendMeACopy": this.model.responseCopy,
+    //   "accountId": this.model.company.id,
+    //   "locationId" : parseInt(this.model.loc)
+    // }
 
-    let obj = {
-      "dcId": 1,
-      "orgId": this.model.company.id,
-      "projectId": parseInt(this.model.loc),
-      "suffix": "Mr",
-      "firstName": this.model.firstName,
-      "lastName": this.model.lastName,
-      "middleName": "",
-      "email":  this.model.email,
-      "phone": this.model.phoneNumber.length > 14
-      ? this.model.phoneNumber.substring(0, this.model.phoneNumber.length - 1) : this.model.phoneNumber,
-      "dob": this.dateToRequest(this.model.dob),
-      "race": this.model.race,
-      "gender": this.model.sex,
-      "homePhoneNumber": "",
-      "drivingLicenseNumber": "",
-      "drivingLicenseState": "",
-      "consentResult": this.model.consent,
-      "consent": this.model.consentResult == true ? 'Yes' : 'No',
-      "byTypingMyInitials": this.model.initials,
-      "sendMeACopy": this.model.responseCopy,
-      "address": [
-      {
-        "addr1": this.model.addressOne,
-        "addr2": this.model.addressTwo,
-        "city": this.model.city,
-        "zipcode": this.model.zipCode,
-        "countryPhoneCode": this.model.country.phoneCode,
-        "country": {
-        "id": this.model.country.id,
-        "countryName": this.model.country.countryName,
-        },
-        "state": this.model.state
-      }
-      ]
-    }
-    if(this.model.consentResult){
-    this.emp.createEmployee(obj).subscribe((data) => {this.successCallBack(data)})
-    }
+    // let obj = {
+    //   "dcId": 1,
+    //   "orgId": this.model.company.id,
+    //   "projectId": parseInt(this.model.loc),
+    //   "suffix": "Mr",
+    //   "firstName": this.model.firstName,
+    //   "lastName": this.model.lastName,
+    //   "middleName": "",
+    //   "email":  this.model.email,
+    //   "phone": this.model.phoneNumber.length > 14
+    //   ? this.model.phoneNumber.substring(0, this.model.phoneNumber.length - 1) : this.model.phoneNumber,
+    //   "dob": this.dateToRequest(this.model.dob),
+    //   "race": this.model.race,
+    //   "gender": this.model.sex,
+    //   "homePhoneNumber": "",
+    //   "drivingLicenseNumber": "",
+    //   "drivingLicenseState": "",
+    //   "consentResult": this.model.consent,
+    //   "consent": this.model.consentResult == true ? 'Yes' : 'No',
+    //   "byTypingMyInitials": this.model.initials,
+    //   "sendMeACopy": this.model.responseCopy,
+    //   "address": [
+    //   {
+    //     "addr1": this.model.addressOne,
+    //     "addr2": this.model.addressTwo,
+    //     "city": this.model.city,
+    //     "zipcode": this.model.zipCode,
+    //     "countryPhoneCode": this.model.country.phoneCode,
+    //     "country": {
+    //     "id": this.model.country.id,
+    //     "countryName": this.model.country.countryName,
+    //     },
+    //     "state": this.model.state
+    //   }
+    //   ]
+    // }
+    // if(this.model.consentResult){
+    // this.emp.createEmployee(obj).subscribe((data) => {this.successCallBack(data)})
+    // }
   }
   successCallBack(data:any) {
+    this.submitDisadble = true
     if(data.status == 'SUCCESS'){
     this.toast.success(data.message, 'Success')
     this.employeeVal = false
     this.model = {}
+    this.frontCardObj = {}
+    this.backCardObj = {}
+    this.attestationFirstName = undefined;
+    this.attestationLastName = undefined;
+    this.vaccinedetails = undefined
     this.locationList = []
     this.cardObj = {}
     this.vaccinedetails = undefined
@@ -150,13 +165,31 @@ export class AppComponent implements OnInit {
     return date.year+'-'+date.month+'-'+date.day
     }
   }
+
+  dateToRequestSample(date:any){
+    if(date.day <= 9 && date.month <= 9){
+      return '0'+date.month+'/'+'0'+date.day+'/'+date.year
+    }
+    else if(date.day <= 9 && date.month > 9){
+      return date.month+'/'+'0'+date.day+'/'+date.year
+    }
+    else if(date.month <= 9 && date.day > 9){
+      return '0'+date.month+'/'+date.day+'/'+date.year
+    }
+    else{
+    return date.month+'/'+date.day+'/'+date.year
+    }
+  }
+
   dateToModel(date : any){
     let d:any = (date.split('T')[0]).split('-')
     let obj:any= { "year": parseInt(d[0]), "month": parseInt(d[1]), "day": parseInt(d[2]) };
     return obj
   }
   onCompanyChange(data:any){
-    console.log(data);
+    console.log(data.target.value);
+    this.model.ques = undefined
+    this.vaccinedetails = undefined
     this.locationList = this.model.company['totalProjects']
   }
   open(lesson: any) {
@@ -205,15 +238,22 @@ export class AppComponent implements OnInit {
           "state": this.model.state
         }
         ],
-        vaccine: {
+        vaccine: this.model.ques == 'yes' ? {
           "vaccineType" : "COVID-19",
           "manufacturer" : this.model.manufacturer,
-          "doseDate" : this.model.vaccineDoseDate ? this.dateToRequest(this.model.vaccineDoseDate) : null,
-          "vaccineCardFileName" : this.cardObj.fileName,
-          "vaccineCardFile" : this.cardObj.file
-        }
+          "doseDate" : this.model.vaccineDoseDate ? this.dateToRequestSample(this.model.vaccineDoseDate) : null,
+          "vaccineCardFrontFileName" : this.frontCardObj.fileName,
+          "vaccineCardFileFront" : this.frontCardObj.file,
+          "vaccineCardBackFileName" : this.backCardObj.fileName,
+          "vaccineCardFileBack" : this.backCardObj.file,
+          "doseNumber" : this.model.doseNum,
+          "attestationFlag" : this.model.attestationFlag,
+          "attestationFirstName" : this.attestationFirstName,
+          "attestationLastName" : this.attestationLastName
+        } : undefined
       }
-      if(this.model.consentResult){
+      if(this.model.consentResult || true){
+        this.submitDisadble = true
       this.emp.createEmployee(obj).subscribe((data) => {this.successCallBack(data)})
       }
     }
@@ -319,7 +359,7 @@ export class AppComponent implements OnInit {
     }
     return false;
   }
-  upload(files:any){
+  frontUpload(files:any){
     console.log(files.target.files);
     let card = files.target.files[0];
     this.getBase64(card).then((data: any) => {
@@ -328,7 +368,19 @@ export class AppComponent implements OnInit {
           file: data.split(',')[1],
       };
       console.log(temp);
-      this.cardObj = temp
+      this.frontCardObj = temp
+  });
+  }
+  backUpload(files:any){
+    console.log(files.target.files);
+    let card = files.target.files[0];
+    this.getBase64(card).then((data: any) => {
+      const temp = {
+          fileName: card.name,
+          file: data.split(',')[1],
+      };
+      console.log(temp);
+      this.backCardObj = temp
   });
   }
   getBase64(file:any) {
@@ -340,12 +392,29 @@ export class AppComponent implements OnInit {
     });
   }
 
+  onLocationChange(data:any){
+    this.model.ques = undefined
+    let locationObj = this.locationList.filter((data) => {
+      return data.id == this.model.loc
+    })
+    this.dynamicIntakeConsentText = locationObj[0]?.intakeConsentTxt
+  }
+
   handleChange(evt:any) {
     var target = evt.target.value;
     console.log(target);
-    (target == 'yes' && this.model.company.vaccineRequired == 'true') ? this.vaccinedetails = true : this.vaccinedetails = false
+    (target == 'yes' && this.model.company.vaccineRequired) ? this.vaccinedetails = true : this.vaccinedetails = false
     if(target == 'no'){
       this.toast.warning('Your company requires vaccine information', 'Warning');
     }
+  }
+
+  openAttestationLink(lesson: any) {
+    const modalRef = this.modal.open(lesson);
+    modalRef.componentInstance.lesson = lesson;
+  }
+  attestationSubmit(){
+    this.model.attestationFlag = true
+    this.closeModal()
   }
 }
