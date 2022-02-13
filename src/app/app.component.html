@@ -112,7 +112,7 @@
     </div>
     <div class="col-md-6">
       <div class="form-group">
-        <label for="email">Email</label>
+        <label for="email">Email <span style="font-size: 12px;font-weight: 500;">( Each persion is identified by unique email )</span></label>
         <input  type="text" [autocomplete]="true" class="form-control" name="email" placeholder="Email" [(ngModel)]="model.email" #email="ngModel" [ngClass]="{ 'is-invalid': f.submitted && email.invalid }" required />
         <div *ngIf="f.submitted && email.invalid" class="invalid-feedback">
             <div *ngIf="email?.errors?.required">Email is required</div>
