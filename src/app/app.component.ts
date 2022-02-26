@@ -17,7 +17,7 @@ export class AppComponent implements OnInit {
   companyList :any[] = []
   consentResultList :any[] = ["Yes","No"];
   consentList :any[] = ["Only Me","Me and the Company Listed above"];
-  vaccineList:any[] = ["Pfizer", "Moderna", "Johnson & Johnson's"];
+  vaccineList:any[] = ["Pfizer", "Moderna", "Johnson & Johnson's","AstraZeneca","Novavax"];
   doseNumList:any[] = ["1", "2", "Booster"]
   employeeVal : boolean = false;
   locationList :any[] = [];
